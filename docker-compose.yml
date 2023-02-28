@@ -1,0 +1,30 @@
+version: '3'
+services:
+  front:
+    image: rand_chat_front
+    working_dir: /app/front
+    build: front/
+    command: npm run dev
+    ports:
+      - "5173:5173"
+      - "3000:3000"
+    volumes:
+      - ./front:/app/front/
+
+  back:
+    image: rand_chat_back
+    working_dir: /app/back
+    command: flask run --host=0.0.0.0
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./back:/app/back/
+
+#volumes:
+#  random_chat:
+#    driver: local
+#    driver_opts:
+#      type: none
+#      device: /Users/jlgs/PycharmProjects/random_chat/
+#      o: bind
+#      bind-propagation: shared
