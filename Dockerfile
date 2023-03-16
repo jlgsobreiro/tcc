@@ -1,12 +1,15 @@
-FROM node:16-alpine AS front
+FROM python:3-alpine AS front
 
 #WORKDIR /app
 
 COPY ./ ./app/
 WORKDIR /app/front/
 
-RUN npm i
-RUN npm run build
+#RUN pip install --upgrade pip
+RUN pip install poetry
+RUN poetry install
+
+RUN #pip install -r requirements.txt
 
 
 FROM python:3-alpine AS back
@@ -18,5 +21,21 @@ COPY ./ /app/
 WORKDIR /app/back/
 
 #RUN pip install --upgrade pip
+RUN pip install poetry
+RUN poetry install
+RUN #pip install -r requirements.txt
 
-RUN pip install -r requirements.txt
+FROM python:3-alpine AS crud
+
+#WORKDIR /app
+
+
+COPY ./ /app/
+WORKDIR /app/simple_crud/
+
+#RUN pip install --upgrade pip
+RUN pip install poetry
+RUN poetry install
+RUN #pip install -r requirements.txt
+
+FROM mongo AS mongo

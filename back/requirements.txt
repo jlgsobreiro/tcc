@@ -1,3 +1,6 @@
 pip==23.0.1
-setuptools==67.3.2
+setuptools==67.4.0
 Flask==2.2.3
+flask-socketio
+flask_cors
+python-socketio==5.7.2

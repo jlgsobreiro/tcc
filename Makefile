@@ -1,6 +1,8 @@
 build: stop
 	docker build --target front -t rand_chat_front .
 	docker build --target back -t rand_chat_back .
+	docker build --target crud -t rand_chat_crud .
+	docker build --target mongo -t rand_chat_mongo .
 
 start:
 	docker compose up
