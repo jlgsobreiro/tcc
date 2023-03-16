@@ -1,5 +1,5 @@
-from simple_crud.repository.base_mongo import BaseMongo
-from simple_crud.models.Account import Account
+from repository.base_mongo import BaseMongo
+from models.Account import Account
 
 
 class RepositorioAccount(BaseMongo):

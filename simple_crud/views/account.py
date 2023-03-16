@@ -1,5 +1,5 @@
 from models.Account import Account
-from repository.usuario import RepositorioAccount
+from repository.account import RepositorioAccount
 from views.base_crud import SimpleCRUD
 
 
@@ -8,7 +8,7 @@ class AccountView(SimpleCRUD):
         meta = Account
         repo = RepositorioAccount
 
-    title = 'Usuarios'
+    title = 'Account'
 
 
 

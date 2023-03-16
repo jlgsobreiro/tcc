@@ -2,7 +2,7 @@ from bson import ObjectId
 from mongoengine import Document
 from mongoengine.fields import *
 
-from simple_crud.models.BaseModel import BaseModel
+from models.BaseModel import BaseModel
 
 
 class Account(Document, BaseModel):
@@ -23,9 +23,6 @@ class Account(Document, BaseModel):
 
     def is_active(self):
         return True
-
-    def is_anonymous(self):
-        return False
 
     def get_id(self):
         return ObjectId(self.id).__str__()

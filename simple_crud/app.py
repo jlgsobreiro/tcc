@@ -12,6 +12,7 @@ from wtforms.fields import *
 from forms.Forms import LoginForm, RegisterForm
 from models.Usuario import Usuario
 from repository.usuario import RepositorioUsuarios
+from views.account import AccountView
 from views.produto import ProdutoView
 from views.user import UserView
 
@@ -26,7 +27,8 @@ links_nav_bar = [
     ('home', 'Home'),
     # (user_table_view_endpoint.replace('/', ''), 'Usuarios')
     ('/userview', 'Usuarios'),
-    ('/produtoview', 'Produtos')
+    ('/produtoview', 'Produtos'),
+    ('/accountview', 'Account'),
 ]
 
 app.__setattr__("links_nav_bar", links_nav_bar)
@@ -43,6 +45,10 @@ user_view.add_url_rule(app)
 produto_view = ProdutoView
 produto_view.links_nav_bar = links_nav_bar
 produto_view.add_url_rule(app)
+
+account_view = AccountView
+account_view.links_nav_bar = links_nav_bar
+account_view.add_url_rule(app)
 
 
 @login_manager.user_loader

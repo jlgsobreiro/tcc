@@ -6,6 +6,7 @@ from wtforms.validators import DataRequired
 
 from models.Produto import Produto
 from models.Usuario import Usuario
+from models.Account import Account
 
 
 class LoginForm(FlaskForm):
@@ -60,3 +61,9 @@ class UsuarioForm(FlaskForm):
 class ProdutoForm(FlaskForm):
     def populated_obj(self):
         return self.populate_obj(Produto)
+
+
+@add_form_fields_by_model(Account)
+class AccountForm(FlaskForm):
+    def populated_obj(self):
+        return self.populate_obj(Account)

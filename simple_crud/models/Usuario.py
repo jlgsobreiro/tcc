@@ -2,7 +2,7 @@ from bson import ObjectId
 from mongoengine import Document
 from mongoengine.fields import *
 
-from simple_crud.models.BaseModel import BaseModel
+from models.BaseModel import BaseModel
 
 
 class Usuario(Document, BaseModel):
