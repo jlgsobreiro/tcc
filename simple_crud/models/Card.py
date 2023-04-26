@@ -5,16 +5,18 @@ from mongoengine.fields import *
 from models.BaseModel import BaseModel
 
 
-class Account(Document, BaseModel):
-    owner = StringField(required=True)
-    amount = StringField(required=True)
-    card = StringField(required=True)
+class Card(Document, BaseModel):
+    nome_portador = StringField(required=True)
+    numero_do_cartao = StringField(required=True)
+    cvv = StringField(required=True)
+    validade = StringField(required=True)
+    conta_associada = StringField(required=True)
 
     def get_all(self):
-        return Account.objects()
+        return Card.objects()
 
     def instance_reference(self):
-        return Account
+        return Card
 
     def format_self(self):
         pass

@@ -4,7 +4,9 @@ from wtforms.fields import StringField, PasswordField, EmailField, SubmitField, 
 from mongoengine.fields import StringField as MongoStringField, EmailField as MongoEmailField, BooleanField as MongoBooleanField, FloatField as MongoFloatField, IntField as MongoIntegerField
 from wtforms.validators import DataRequired
 
+from models.Card import Card
 from models.Produto import Produto
+from models.TransferHistory import TransferHistory
 from models.Usuario import Usuario
 from models.Account import Account
 
@@ -67,3 +69,15 @@ class ProdutoForm(FlaskForm):
 class AccountForm(FlaskForm):
     def populated_obj(self):
         return self.populate_obj(Account)
+
+
+@add_form_fields_by_model(TransferHistory)
+class TransferHistoryForm(FlaskForm):
+    def populated_obj(self):
+        return self.populate_obj(TransferHistory)
+
+
+@add_form_fields_by_model(Card)
+class TransferHistoryForm(FlaskForm):
+    def populated_obj(self):
+        return self.populate_obj(Card)

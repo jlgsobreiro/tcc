@@ -1,15 +1,18 @@
 const meuBotao_btn_socket = document.getElementById("btn_socket");
 const meuBotao_btn_socket_disconnect = document.getElementById("btn_socket_disconnect");
+var meuBotao_GET = document.getElementById("btn_get");
+var meuBotao_POST = document.getElementById("btn_post");
+
 const lbl_skt = document.getElementById("sck_cnt");
-const host_url = "localhost:5000"
+const back_end_url = "localhost:5000"
+
 meuBotao_btn_socket.addEventListener("click", function() {
-  const socket = io(host_url);
+  const socket = io(back_end_url);
   socket.on('connect', () => {
     // Envia mensagem de autorização para o servidor
     socket.emit('authorization', { token: 'erg8e1b6r8g46e4rmzer46g8he1ntb6jytkkorytjdhs8kuy64tjyr5the1g' });
   });
 
-  // Trata a resposta do servidor
   socket.on('authorization_response', (response) => {
     if (response.success) {
       lbl_skt.innerHTML = "Conectado"
@@ -23,13 +26,13 @@ meuBotao_btn_socket.addEventListener("click", function() {
     }
   });
 
-  // Adiciona o cabeçalho Access-Control-Allow-Origin em todas as solicitações
   socket.io.on('transport:before', (data) => {
     data.xhr.setRequestHeader('Access-Control-Allow-Origin', '*');
   });
 });
+
 meuBotao_btn_socket_disconnect.addEventListener("click", function() {
-  const socket = io(host_url);
+  const socket = io(back_end_url);
   socket.on('disconnect', () => {
     // Envia mensagem de autorização para o servidor
     socket.emit('client_disconnecting', { token: 'erg8e1b6r8g46e4rmzer46g8he1ntb6jytkkorytjdhs8kuy64tjyr5the1g' });
@@ -53,9 +56,9 @@ meuBotao_btn_socket_disconnect.addEventListener("click", function() {
     data.xhr.setRequestHeader('Access-Control-Allow-Origin', '*');
   });
 });
-var meuBotao_GET = document.getElementById("btn_get");
+
 meuBotao_GET.addEventListener("click", function() {
-  $.get(host_url+"/", {teste: 123})
+  $.get(back_end_url+"/", {teste: 123})
   // fetch(host_url + "/").then(r => { console.log('foi')})
   // fetch(host_url+"/", {
   //   method: "GET",
@@ -67,9 +70,9 @@ meuBotao_GET.addEventListener("click", function() {
   // });
   // alert("GET");
 });
-var meuBotao_POST = document.getElementById("btn_post");
+
 meuBotao_POST.addEventListener("click", function() {
-  $.post(host_url+"/", {teste: 123},function (data){
+  $.post(back_end_url+"/", {teste: 123},function (data){
     console.log("teste123")
   })
   // fetch(host_url+"/", {

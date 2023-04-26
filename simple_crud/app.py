@@ -13,7 +13,9 @@ from forms.Forms import LoginForm, RegisterForm
 from models.Usuario import Usuario
 from repository.usuario import RepositorioUsuarios
 from views.account import AccountView
+from views.card import CardView
 from views.produto import ProdutoView
+from views.transfer_history import TransferHistoryView
 from views.user import UserView
 
 app = Flask(__name__)
@@ -29,6 +31,8 @@ links_nav_bar = [
     ('/userview', 'Usuarios'),
     ('/produtoview', 'Produtos'),
     ('/accountview', 'Account'),
+    ('/transferhistoryview', 'Transfer History'),
+    ('/card', 'Card'),
 ]
 
 app.__setattr__("links_nav_bar", links_nav_bar)
@@ -49,6 +53,14 @@ produto_view.add_url_rule(app)
 account_view = AccountView
 account_view.links_nav_bar = links_nav_bar
 account_view.add_url_rule(app)
+
+trasnfer_history_view = TransferHistoryView
+trasnfer_history_view.links_nav_bar = links_nav_bar
+trasnfer_history_view.add_url_rule(app)
+
+card_view = CardView
+card_view.links_nav_bar = links_nav_bar
+card_view.add_url_rule(app)
 
 
 @login_manager.user_loader

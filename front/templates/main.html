@@ -5,6 +5,40 @@
     <title>Title</title>
 </head>
 <body>
+<div class="container">
+    <div>
+        <form method="post" action="/login">
+            <label for="username">Username</label>
+            <input type="text" name="username" id="username">
+            <label for="password">Password</label>
+            <input type="password" name="password" id="password">
+            <label for="submit">Submit</label>
+            <input type="submit" name="submit" id="submit">
+        </form>
+    </div>
+
+    <div class="z-depth-2">
+        <div class="form-control">
+            <form method="post" action="/login">
+
+                <label class="row" for="nome">Nome</label>
+                <input readonly id="nome" name="nome" value="Teste Testinho">
+                <label class="row" for="numero_cartao">Cartão</label>
+                <input readonly id="numero_cartao" name="numero_cartao" value="1234567890123">
+                <label class="row" for="cvv">CVV</label>
+                <input readonly id="cvv" name="cvv" value="123">
+                <label class="row" for="validade">Validade</label>
+                <input readonly id="validade" name="validade" value="12/2023">
+                <label class="row" for="valor">Valor</label>
+                <input type="number" step="0.01" id="valor" name="valor">
+                <input type="hidden" id="seller" name="seller" value="{{ seller }}">
+
+                <br>
+                <input type="submit" name="submit2" id="submit2" value="Enviar">
+            </form>
+        </div>
+    </div>
+
     <div>
         <button id="btn_socket">Teste Connect Socket</button>
         <button id="btn_socket_disconnect">Teste Disconnect Socket</button>
@@ -14,7 +48,11 @@
     <div>
         <p id="sck_cnt"></p>
     </div>
-
+</div>
+     <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
     <script src={{ url_for("static", filename="front.js")}}></script>

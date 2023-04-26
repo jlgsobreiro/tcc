@@ -1,41 +1,31 @@
-FROM python:3-alpine AS front
-
-#WORKDIR /app
-
+FROM python:3-alpine AS base
+ENV PYTHONUNBUFFERED 1
 COPY ./ ./app/
+
+FROM base AS front
+
 WORKDIR /app/front/
 
-#RUN pip install --upgrade pip
 RUN pip install poetry
 RUN poetry install
 
-RUN #pip install -r requirements.txt
+FROM base AS back
 
-
-FROM python:3-alpine AS back
-
-#WORKDIR /app
-
-
-COPY ./ /app/
 WORKDIR /app/back/
 
-#RUN pip install --upgrade pip
 RUN pip install poetry
 RUN poetry install
-RUN #pip install -r requirements.txt
 
-FROM python:3-alpine AS crud
+FROM base AS authorizer
 
-#WORKDIR /app
+WORKDIR /app/authorizer/
 
+RUN pip install poetry
+RUN poetry install
 
-COPY ./ /app/
+FROM base AS crud
 WORKDIR /app/simple_crud/
-
-#RUN pip install --upgrade pip
 RUN pip install poetry
 RUN poetry install
-RUN #pip install -r requirements.txt
 
 FROM mongo AS mongo

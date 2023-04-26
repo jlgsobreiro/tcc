@@ -5,16 +5,19 @@ from mongoengine.fields import *
 from models.BaseModel import BaseModel
 
 
-class Account(Document, BaseModel):
-    owner = StringField(required=True)
+class TransferHistory(Document, BaseModel):
+    sender = StringField(required=True)
+    receiver = StringField(required=True)
     amount = StringField(required=True)
-    card = StringField(required=True)
+    status = StringField(required=True)
+    datetime = StringField(required=True)
+
 
     def get_all(self):
-        return Account.objects()
+        return TransferHistory.objects()
 
     def instance_reference(self):
-        return Account
+        return TransferHistory
 
     def format_self(self):
         pass
