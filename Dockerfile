@@ -8,6 +8,8 @@ WORKDIR /app/front/
 
 RUN pip install poetry
 RUN poetry install
+ENV PYTHONPATH=$PYTHONPATH:/app/iso8583/
+ADD ./iso8583 /app/front
 
 FROM base AS back
 
@@ -15,6 +17,7 @@ WORKDIR /app/back/
 
 RUN pip install poetry
 RUN poetry install
+ENV PYTHONPATH=$PYTHONPATH:/app/iso8583/
 
 FROM base AS authorizer
 

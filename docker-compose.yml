@@ -9,6 +9,7 @@ services:
       - "5001:5000"
     volumes:
       - ./front:/app/front/
+      - ./iso8583:/app/iso8583/
     networks:
       - minha-rede
 
@@ -20,6 +21,7 @@ services:
       - "5000:5000"
     volumes:
       - ./back:/app/back/
+      - ./iso8583:/app/iso8583/
     networks:
       - minha-rede
 
