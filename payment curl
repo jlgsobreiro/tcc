@@ -1,0 +1,26 @@
+curl --location 'http://localhost:5000/requests' \
+--header 'Content-Type: application/json' \
+--data '{
+    "request_type": "payment",
+    "local_date": "2023-07-01T12:00:00",
+    "request_info": {
+        "payment_method": "credit",
+        "amount": 100,
+        "card_data": {
+            "holder_name": "Fulano de Tal",
+            "card_number": "0123456789101112",
+            "cvv2": "Fulano de Tal",
+            "expire_date": "0828",
+            "payment_mode": "chip",
+            "installments": 1
+        },
+        "establishment": {
+            "address": "Rua XPTO",
+            "address_number": "123",
+            "business_name": "Loja XPTO",
+            "business_id": "123",
+            "descriptor": "XPTO",
+            "pos_id": "001"
+        }
+    }
+}'
