@@ -12,7 +12,6 @@ CORS(app)
 
 
 def payment_request(json_request):
-    x = [0, 1, 3, 4, 7, 11, 12, 13, 14, 18, 37, 41, 42, 43, 49, 52, 54, 59, 60, 61, 62, 63, 123]
     payment = iso8583.Iso8583()
     return payment.make_payment_request_iso(json_request)
 

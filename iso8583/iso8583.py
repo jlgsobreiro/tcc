@@ -43,43 +43,43 @@ def _active_bits_in_bitmap(bit_map_in_bits, bit_start=0):
 
 class Iso8583:
     bit_config = {
-        0: {"type": 'n', "size": 4, "action": set_bit_from_raw_iso},
-        1: {"type": 'b', "size": 32, "bitmap": 32, "action": set_bitmap},
-        2: {"type": 'LL', "size": 19, "action": set_bit_from_raw_iso},
-        3: {"type": 'n', "size": 6, "action": set_bit_from_raw_iso},
-        4: {"type": 'n', "size": 12, "action": set_bit_from_raw_iso},
-        5: {"type": 'n', "size": 0, "action": set_bit_from_raw_iso},
-        6: {"type": 'n', "size": 0, "action": set_bit_from_raw_iso},
-        7: {"type": 'n', "size": 10, "action": set_bit_from_raw_iso},
-        11: {"type": 'n', "size": 6, "action": set_bit_from_raw_iso},
-        12: {"type": 'n', "size": 6, "action": set_bit_from_raw_iso},
-        13: {"type": 'n', "size": 4, "action": set_bit_from_raw_iso},
-        14: {"type": 'n', "size": 4, "action": set_bit_from_raw_iso},
-        18: {"type": 'n', "size": 4, "action": set_bit_from_raw_iso},
-        25: {"type": 'n', "size": 2, "action": set_bit_from_raw_iso},
-        32: {"type": 'LL', "size": 11, "action": set_bit_from_raw_iso},
-        35: {"type": 'LL', "size": 37, "action": set_bit_from_raw_iso},
-        37: {"type": 'a', "size": 12, "action": set_bit_from_raw_iso},
-        38: {"type": 'a', "size": 6, "action": set_bit_from_raw_iso},
-        39: {"type": 'a', "size": 2, "action": set_bit_from_raw_iso},
-        41: {"type": 'a', "size": 8, "action": set_bit_from_raw_iso},
-        42: {"type": 'a', "size": 15, "action": set_bit_from_raw_iso},
-        43: {"type": 'a', "size": 40, "action": set_bit_from_raw_iso},
-        44: {"type": 'LL', "size": 25, "action": set_bit_from_raw_iso},
-        45: {"type": 'LL', "size": 76, "action": set_bit_from_raw_iso},
-        49: {"type": 'n', "size": 3, "action": set_bit_from_raw_iso},
-        52: {"type": 'n', "size": 8, "action": set_bit_from_raw_iso},
-        53: {"type": 'n', "size": 48, "action": set_bit_from_raw_iso},
-        54: {"type": 'LLL', "size": 80, "action": set_bit_from_raw_iso},
-        59: {"type": 'LLL', "size": 64, "action": set_bit_from_raw_iso},
-        60: {"type": 'LLL', "size": 999, "bit_map": 8, "action": set_bitmap},
-        61: {"type": 'LLL', "size": 999, "bit_map": 8, "action": set_bitmap},
-        62: {"type": 'LLL', "size": 999, "bit_map": 8, "action": set_bitmap},
-        63: {"type": 'LLL', "size": 999, "bit_map": 8, "action": set_bitmap},
-        70: {"type": 'n', "size": 3, "action": set_bit_from_raw_iso},
-        90: {"type": 'n', "size": 42, "action": set_bit_from_raw_iso},
-        95: {"type": 'a', "size": 42, "action": set_bit_from_raw_iso},
-        123: {"type": 'LLL', "size": 15, "action": set_bit_from_raw_iso},
+        0: {"type": 'n', "size": 4},
+        1: {"type": 'b', "size": 32, "bitmap": 32},
+        2: {"type": 'LL', "size": 19},
+        3: {"type": 'n', "size": 6},
+        4: {"type": 'n', "size": 12},
+        5: {"type": 'n', "size": 0},
+        6: {"type": 'n', "size": 0},
+        7: {"type": 'n', "size": 10},
+        11: {"type": 'n', "size": 6},
+        12: {"type": 'n', "size": 6},
+        13: {"type": 'n', "size": 4},
+        14: {"type": 'n', "size": 4},
+        18: {"type": 'n', "size": 4},
+        25: {"type": 'n', "size": 2},
+        32: {"type": 'LL', "size": 11},
+        35: {"type": 'LL', "size": 37},
+        37: {"type": 'a', "size": 12},
+        38: {"type": 'a', "size": 6},
+        39: {"type": 'a', "size": 2},
+        41: {"type": 'a', "size": 8},
+        42: {"type": 'a', "size": 15},
+        43: {"type": 'a', "size": 40},
+        44: {"type": 'LL', "size": 25},
+        45: {"type": 'LL', "size": 76},
+        49: {"type": 'n', "size": 3},
+        52: {"type": 'n', "size": 8},
+        53: {"type": 'n', "size": 48},
+        54: {"type": 'LLL', "size": 80},
+        59: {"type": 'LLL', "size": 64},
+        60: {"type": 'LLL', "size": 999, "have_tags": True},
+        61: {"type": 'LLL', "size": 999, "have_tags": True},
+        62: {"type": 'LLL', "size": 999, "have_tags": True},
+        63: {"type": 'LLL', "size": 999, "have_tags": True},
+        70: {"type": 'n', "size": 3},
+        90: {"type": 'n', "size": 42},
+        95: {"type": 'a', "size": 42},
+        123: {"type": 'LLL', "size": 15},
     }
 
     raw_iso = ""
@@ -110,15 +110,11 @@ class Iso8583:
 
         self.bit_config[1]['size'] = 32 if bin(int(bit_map[0], 16))[2:].zfill(4)[0] == '1' else 16
         bit_map_in_bits = self._convert_bitmap_to_bit_string(bit_map[:self.bit_config[1]['size']])
-        print("active bits in bitmap")
-        print(self.active_bits_in_bitmap(bit_map_in_bits, 2))
-        print("active bits")
-        print(self.active_bits)
         self.active_bits += [x for x in self.active_bits_in_bitmap(bit_map_in_bits, 2) if x not in self.active_bits]
 
     def active_bits_in_bitmap(self, bit_map_in_bits, bit_start=0):
         active_bits = []
-        for bit in bit_map_in_bits[1:]:
+        for bit in bit_map_in_bits[bit_start:]:
             if bit == '1':
                 active_bits.append(bit_start)
             bit_start += 1
@@ -133,13 +129,15 @@ class Iso8583:
     def get_and_set_bit_from_raw_iso(self, bit, iso):
         position = [0, 0]
         bit_config = self.get_bit_config(bit)
-
+        print(bit)
+        print(iso)
         if bit_config.get('type') in ['LL', 'LLL']:
-            size = iso[:2] if bit_config.get('type') == 'LL' else iso[:3]
-            position[0] = len(size)
-            position[1] = len(size) + int(size) * 2
+            tlv = self.TLV(bit_config.get('type'))
+            tlv.read_from_string(iso, bit_config.get('have_tags'))
+            self.set_bit(bit, value=tlv.raw_value)
+            position[1] = len(tlv.raw_value)
         elif bit_config.get('type') == 'a':
-            position[1] = bit_config.get('size') * 2
+            position[1] = bit_config.get('size')
         else:
             position[1] = bit_config.get('size')
 
@@ -151,16 +149,21 @@ class Iso8583:
     def get_bit_config(self, bit):
         return self.bit_config.get(bit)
 
-    def get_message_type(self):
-        pass
-
     def open_iso(self, raw_iso):
         self.raw_iso = iso = raw_iso
         opened_iso = Iso8583()
-        opened_iso.set_bit(0, raw_iso[:4])
+        # opened_iso.set_bit(0, raw_iso[:4])
         opened_iso.set_active_bits(raw_iso[4:])  # TODO: Terminar abertura da iso
+        iso = opened_iso.get_and_set_bit_from_raw_iso(0, iso)
+        iso = opened_iso.get_and_set_bit_from_raw_iso(1, iso)
+        print(opened_iso.active_bits)
+        for bit in opened_iso.active_bits[2:]:
+            print(iso)
+            iso = opened_iso.get_and_set_bit_from_raw_iso(bit, iso)
         print("opened iso")
         print(opened_iso.active_bits)
+        # opened_iso.update_iso()
+        return opened_iso.raw_iso
         #
         # self.add_bit_to_bitmap(0, iso[:self.get_bit_config(0)['size']])
         #
@@ -184,7 +187,7 @@ class Iso8583:
 
     def update_iso(self):
         bit_map = self.bit_map
-        bit_map.sort(reverse=True)
+        # bit_map.sort(reverse=True)
         if bit_map[0] > 63:
             self.set_bit(1, "1"+"".zfill(127))
         else:
@@ -228,7 +231,7 @@ class Iso8583:
         bit_60_tlv.add_tag("10", "123")
         self.set_bit(60, bit_60_tlv.raw_value)
         # self.set_bit(61, "0200")
-        self.set_bit(62, "0200")
+        # self.set_bit(62, "0200")
         # self.set_bit(63, "0200")
         self.set_bit(123, "0200")
         self.update_iso()
@@ -278,6 +281,18 @@ class Iso8583:
             else:
                 self.raw_value += value
 
+        def read_from_string(self, string, have_tags):
+            if have_tags:
+                length = int(string[:self.length])
+                return string[self.length + length:]
+            while string:
+                tag = string[:self.length]
+                length = int(string[self.length:self.length*2])
+                value = string[self.length*2:(self.length*2)+length]
+                string = string[(self.length*2)+length:]
+                self.raw_value += string[:(self.length*2)+length]
+                print(tag, length, value)
+            return string
 
 class JsonRequest:
 
