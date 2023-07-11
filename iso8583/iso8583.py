@@ -187,14 +187,26 @@ class Iso8583:
 
     def update_iso(self):
         bit_map = self.bit_map
+        bit_map.sort()
+        print(bit_map[-1])
         # bit_map.sort(reverse=True)
-        if bit_map[0] > 63:
+        if bit_map[-1] > 63:
             self.set_bit(1, "1"+"".zfill(127))
         else:
             self.set_bit(1, "0"+"".zfill(63))
         for bit in bit_map:
             self.bit_config[1]['value'] = self.bit_config[1]['value'][:bit] + "1" + self.bit_config[1]['value'][bit+1:]
-        self.bit_config[1]['value'] = hex(int(self.bit_config[1]['value'], 2))[2:]
+        btmp = ""
+        t = 0
+        for bit in self.bit_config[1]['value']:
+            print(bit)
+            btmp += bit
+            t += 1
+            if t % 4 == 0:
+                btmp = btmp[:-4] + hex(int(btmp[-4:], 2)).replace("0x", "")
+                t = 0
+        print(btmp)
+        self.bit_config[1]['value'] = btmp
         types = {"n": lambda x: str(x["value"]).zfill(int(x["size"])),
                  "a": lambda x: str(x["value"]).zfill(int(x["size"])),
                  "LL": lambda x: str(x["value"]),
