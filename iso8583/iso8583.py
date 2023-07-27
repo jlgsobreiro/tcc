@@ -79,38 +79,24 @@ class Iso8583:
         70: {"type": 'n', "size": 3},
         90: {"type": 'n', "size": 42},
         95: {"type": 'a', "size": 42},
-        123: {"type": 'LLL', "size": 15},
+        123: {"type": 'a', "size": 15},
     }
 
     raw_iso = ""
     bit_map = []
-    active_bits = [0, 1]
-
-    def get_field_bit_map(self, bit):
-        bit_map_field = None
-        if self.is_field_bitmap(bit):
-            active_fields = self.active_bits_in_bitmap(bit)
-        pass
-
-    def add_bit_to_bitmap(self, bit, value):
-        self.bit_map.append((bit, value))
-
-    def is_field_bitmap(self, bit):
-        return self.bit_config.get(bit).get("bitmap") is not None
-
-    # def set_bit_from_iso_string(self, bit, iso_string):
-    #     self.bit_map[self.bits_config[bit].get('bit')] = iso_string[:self.bits_config[bit].get('size')]
-    #     return iso_string[:self.bits_config[bit].get('size')]
-    #
-    # def get_bit_map(self):
-    #     bit = 1
-    #     return self.get_bit_on_raw_iso(bit)
+    set_of_active_bits = set()
+    set_of_active_bits.add(0)
+    set_of_active_bits.add(1)
 
     def set_active_bits(self, bit_map):
-
+        print(f"set_active_bits: {bit_map}")
         self.bit_config[1]['size'] = 32 if bin(int(bit_map[0], 16))[2:].zfill(4)[0] == '1' else 16
+        print(f"set_active_bits: size[{self.bit_config[1]['size']}]")
         bit_map_in_bits = self._convert_bitmap_to_bit_string(bit_map[:self.bit_config[1]['size']])
-        self.active_bits += [x for x in self.active_bits_in_bitmap(bit_map_in_bits, 2) if x not in self.active_bits]
+        print(f"set_active_bits: bit_map_in_bits[{bit_map_in_bits}]")
+        for x in self.active_bits_in_bitmap(bit_map_in_bits, 2):
+            self.set_of_active_bits.add(x)
+        print(f"set_active_bits: self.active_bits[{self.set_of_active_bits}]")
 
     def active_bits_in_bitmap(self, bit_map_in_bits, bit_start=0):
         active_bits = []
@@ -133,9 +119,11 @@ class Iso8583:
         print(iso)
         if bit_config.get('type') in ['LL', 'LLL']:
             tlv = self.TLV(bit_config.get('type'))
+            print(f"TLV type {bit_config.get('type')}")
             tlv.read_from_string(iso, bit_config.get('have_tags'))
             self.set_bit(bit, value=tlv.raw_value)
             position[1] = len(tlv.raw_value)
+            print(f"RAW TLV: {tlv.raw_value}, {len(tlv.raw_value)}")
         elif bit_config.get('type') == 'a':
             position[1] = bit_config.get('size')
         else:
@@ -143,25 +131,29 @@ class Iso8583:
 
         bit_value = iso[position[0]:position[1]]
 
-        self.bit_map.append({'bit': bit, 'value': bit_value})
+        self.set_of_active_bits.add(bit)
         return iso[position[1]:]
 
     def get_bit_config(self, bit):
         return self.bit_config.get(bit)
 
+    def get_bit_config_value(self, bit):
+        return self.bit_config.get(bit).get("value")
+
     def open_iso(self, raw_iso):
+        print(f"open_iso: {raw_iso}")
         self.raw_iso = iso = raw_iso
         opened_iso = Iso8583()
-        # opened_iso.set_bit(0, raw_iso[:4])
+        opened_iso.set_bit(0, raw_iso[:4])
         opened_iso.set_active_bits(raw_iso[4:])  # TODO: Terminar abertura da iso
         iso = opened_iso.get_and_set_bit_from_raw_iso(0, iso)
         iso = opened_iso.get_and_set_bit_from_raw_iso(1, iso)
-        print(opened_iso.active_bits)
-        for bit in opened_iso.active_bits[2:]:
+        print(opened_iso.set_of_active_bits)
+        for bit in sorted(opened_iso.set_of_active_bits)[2:]:
             print(iso)
             iso = opened_iso.get_and_set_bit_from_raw_iso(bit, iso)
         print("opened iso")
-        print(opened_iso.active_bits)
+        print(opened_iso.set_of_active_bits)
         # opened_iso.update_iso()
         return opened_iso.raw_iso
         #
@@ -183,10 +175,10 @@ class Iso8583:
 
     def set_bit(self, bit, value):
         self.bit_config[bit]['value'] = value
-        self.bit_map.append(bit)
+        self.set_of_active_bits.add(bit)
 
     def update_iso(self):
-        bit_map = self.bit_map
+        bit_map = list(self.set_of_active_bits)
         bit_map.sort()
         print(bit_map[-1])
         # bit_map.sort(reverse=True)
@@ -205,7 +197,6 @@ class Iso8583:
             if t % 4 == 0:
                 btmp = btmp[:-4] + hex(int(btmp[-4:], 2)).replace("0x", "")
                 t = 0
-        print(btmp)
         self.bit_config[1]['value'] = btmp
         types = {"n": lambda x: str(x["value"]).zfill(int(x["size"])),
                  "a": lambda x: str(x["value"]).zfill(int(x["size"])),
@@ -221,61 +212,110 @@ class Iso8583:
         return self.raw_iso
 
     def make_payment_request_iso(self, request):
+        print("make_payment_request_iso")
         local_date = datetime.datetime.strptime(request.get("local_date"), "%Y-%m-%dT%H:%M:%S")
         self.set_bit(0, "0200")
         self.set_bit(3, "000000")
         self.set_bit(4, request.get("request_info").get("amount"))
-        self.set_bit(7, local_date.strftime("%H%M%S%m%d"))
+        self.set_bit(7, str(local_date.strftime("%m%d%H%M%S")))
         self.set_bit(11, "000001")
-        self.set_bit(12, local_date.strftime("%H%M%S"))
-        self.set_bit(13, local_date.strftime("%m%d"))
-        # self.set_bit(14, request.get("card_data").get("expiration_date"))
-        # self.set_bit(18, "get merchant code type on bd")
-        # self.set_bit(37, local_date.strftime("%Y")[-1]+local_date.strftime("%m%d").zfill(3)+local_date.strftime("%H") + self.get_bit_config(11).get("value"))
-        # self.set_bit(41, "0200")
+        self.set_bit(12, str(local_date.strftime("%H%M%S")))
+        self.set_bit(13, str(local_date.strftime("%m%d")))
         self.set_bit(42, "1231234567")
-        # self.set_bit(43, "0200")
-        # self.set_bit(49, "0200")
-        # self.set_bit(52, "0200")
-        # self.set_bit(54, "0200")
-        # self.set_bit(59, "0200")
         bit_60_tlv = self.TLV("LL")
         bit_60_tlv.add_tag("10", "123")
         self.set_bit(60, bit_60_tlv.raw_value)
-        # self.set_bit(61, "0200")
-        # self.set_bit(62, "0200")
-        # self.set_bit(63, "0200")
         self.set_bit(123, "0200")
         self.update_iso()
         print(self.open_iso(self.raw_iso))
         return self.raw_iso
 
     def make_payment_response_iso(self, request_iso):
-        local_date = datetime.datetime.strptime(request_iso.get("local_date"), "%Y-%m-%dT%H:%M:%S")
-        self.set_bit(0, "0200")
+        print("make_payment_response_iso")
+        self.open_iso(request_iso)
+        self.set_bit(0, "0210")
+        self.set_bit(3, self.get_bit(3))
+        self.set_bit(4, self.get_bit(4))
+        self.set_bit(7, self.get_bit(7))
+        self.set_bit(11, self.get_bit(11))
+        self.set_bit(12, self.get_bit(12))
+        self.set_bit(13, self.get_bit(13))
+        self.set_bit(39, "00")
+        self.set_bit(42, self.get_bit(42))
+        self.set_bit(62, self.get_bit(62))
+        self.set_bit(123, "0210")
+        print(self.bit_map)
+        self.update_iso()
+        return self.raw_iso
+
+    def make_void_request_iso(self, request):
+        local_date = datetime.datetime.strptime(request.get("local_date"), "%Y-%m-%dT%H:%M:%S")
+        self.set_bit(0, "0420")
         self.set_bit(3, "000000")
-        self.set_bit(4, request_iso.get("request_info").get("amount"))
-        self.set_bit(7, local_date.strftime("%H%M%S%m%d"))
+        self.set_bit(4, request.get("request_info").get("amount"))
+        self.set_bit(7, local_date.strftime("%m%d%M%H%S"))
         self.set_bit(11, "000001")
-        self.set_bit(12, local_date.strftime("%H%M%S"))
-        self.set_bit(13, local_date.strftime("%m%d"))
-        # self.set_bit(14, request.get("card_data").get("expiration_date"))
-        # self.set_bit(18, "get merchant code type on bd")
-        # self.set_bit(37, local_date.strftime("%Y")[-1]+local_date.strftime("%m%d").zfill(3)+local_date.strftime("%H") + self.get_bit_config(11).get("value"))
-        # self.set_bit(41, "0200")
         self.set_bit(42, "1231234567")
-        # self.set_bit(43, "0200")
-        # self.set_bit(49, "0200")
-        # self.set_bit(52, "0200")
-        # self.set_bit(54, "0200")
-        # self.set_bit(59, "0200")
         bit_60_tlv = self.TLV("LL")
         bit_60_tlv.add_tag("10", "123")
         self.set_bit(60, bit_60_tlv.raw_value)
-        # self.set_bit(61, "0200")
-        self.set_bit(62, "0200")
-        # self.set_bit(63, "0200")
+        self.set_bit(90, "0200")
         self.set_bit(123, "0200")
+        self.update_iso()
+        print(self.open_iso(self.raw_iso))
+        return self.raw_iso
+
+    def make_void_response_iso(self, request_iso):
+        local_date = datetime.datetime.strptime(request_iso.get("local_date"), "%Y-%m-%dT%H:%M:%S")
+        self.set_bit(0, "0420")
+        self.set_bit(3, "000000")
+        self.set_bit(4, request_iso.get("request_info").get("amount"))
+        self.set_bit(7, local_date.strftime("%m%d%M%H%S"))
+        self.set_bit(11, "000001")
+        self.set_bit(39, "1231234567")
+        self.set_bit(42, "1231234567")
+        bit_60_tlv = self.TLV("LL")
+        bit_60_tlv.add_tag("10", "123")
+        self.set_bit(60, bit_60_tlv.raw_value)
+        self.set_bit(90, "0200")
+        self.set_bit(123, "0200")
+        self.update_iso()
+        self.update_iso()
+        return self.raw_iso
+
+
+    def make_status_request_iso(self, request):
+        local_date = datetime.datetime.strptime(request.get("local_date"), "%Y-%m-%dT%H:%M:%S")
+        self.set_bit(0, "0420")
+        self.set_bit(3, "000000")
+        self.set_bit(4, request.get("request_info").get("amount"))
+        self.set_bit(7, local_date.strftime("%m%d%M%H%S"))
+        self.set_bit(11, "000001")
+        self.set_bit(42, "1231234567")
+        bit_60_tlv = self.TLV("LL")
+        bit_60_tlv.add_tag("10", "123")
+        self.set_bit(60, bit_60_tlv.raw_value)
+        self.set_bit(90, "0200")
+        self.set_bit(123, "0200")
+        self.update_iso()
+        print(self.open_iso(self.raw_iso))
+        return self.raw_iso
+
+    def make_status_response_iso(self, request_iso):
+        local_date = datetime.datetime.strptime(request_iso.get("local_date"), "%Y-%m-%dT%H:%M:%S")
+        self.set_bit(0, "0420")
+        self.set_bit(3, "000000")
+        self.set_bit(4, request_iso.get("request_info").get("amount"))
+        self.set_bit(7, local_date.strftime("%m%d%M%H%S"))
+        self.set_bit(11, "000001")
+        self.set_bit(39, "1231234567")
+        self.set_bit(42, "1231234567")
+        bit_60_tlv = self.TLV("LL")
+        bit_60_tlv.add_tag("10", "123")
+        self.set_bit(60, bit_60_tlv.raw_value)
+        self.set_bit(90, "0200")
+        self.set_bit(123, "0200")
+        self.update_iso()
         self.update_iso()
         return self.raw_iso
 
@@ -305,6 +345,10 @@ class Iso8583:
                 self.raw_value += string[:(self.length*2)+length]
                 print(tag, length, value)
             return string
+
+    def get_bit(self, bit):
+        return self.bit_config.get(bit).get("value")
+
 
 class JsonRequest:
 

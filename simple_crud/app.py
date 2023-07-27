@@ -32,7 +32,7 @@ links_nav_bar = [
     ('/produtoview', 'Produtos'),
     ('/accountview', 'Account'),
     ('/transferhistoryview', 'Transfer History'),
-    ('/card', 'Card'),
+    ('/cardview', 'Card'),
 ]
 
 app.__setattr__("links_nav_bar", links_nav_bar)
